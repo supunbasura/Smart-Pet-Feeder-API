@@ -22,6 +22,9 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get("/status", function (req, res){
+    res.send("API UP");
+})
 
 app.use("/auth/user", authUserRoutes);
 
@@ -35,7 +38,7 @@ app.use((error, req, res, next) => {
     res.status(status).json({message: message});
 });
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 80;
 
 mongoose.connect('mongodb+srv://Shenal:SmartPetFeeder2021@cluster0.y3bkj.mongodb.net/Smart-Pet-Feeder?retryWrites=true&w=majority')
     .then(result => {
