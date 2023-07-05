@@ -8,6 +8,38 @@ const authUserRoutes = require("./routes/user");
 
 const authAdminRoutes = require("./routes/admin");
 
+const configs = require("./configs/configs")
+const mqtt_functions = require("./functions/MqttFunctions");
+
+const client = configs.client;
+
+// client.publish('my/test/topic', 'Hello');
+
+// setup the callbacks
+client.on('connect', function () {
+    console.log('MQTT Server Connected');
+});
+
+client.on('error', function (error) {
+    console.log(error);
+});
+
+client.on('message', (topic, message) => {
+    // called each time a message is received
+
+
+    if (topic === "PetFeeder/Status") {
+        mqtt_functions.onReceivePetFeederStatus(message.toString());
+    } else if (topic === "PetFeeder/ScheduleStatus") {
+        mqtt_functions.onReceiveScheduleStatus(message.toString());
+    }else if(topic === "PetFeeder/FillFoods"){
+        mqtt_functions.onReceiveFillFoods(message.toString());
+    }
+});
+
+
+client.subscribe(["PetFeeder/Status", "PetFeeder/ScheduleStatus", "PetFeeder/FillFoods"]);
+
 
 const app = express();
 
@@ -22,9 +54,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get("/status", function (req, res){
-    res.send("API UP");
-})
 
 app.use("/auth/user", authUserRoutes);
 
